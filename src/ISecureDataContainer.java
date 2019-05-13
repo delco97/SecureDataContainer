@@ -2,7 +2,7 @@ import java.util.Iterator;
 
 /**
  * Overview:
- * SecureDataContainer<E> è un contenitore modificabile di oggetti di tipo E. Intuitivamente la collezione si comporta come
+ * ISecureDataContainer<E> è un contenitore modificabile di oggetti di tipo E. Intuitivamente la collezione si comporta come
  * una specie Data Storage per la memorizzazione e condivisione di dati (rappresentati nella simulazione da
  * oggetti di tipo E). La collezione garantisce un meccanismo di sicurezza dei dati fornendo un proprio
  * meccanismo di gestione delle identità degli utenti. Inoltre, la collezione fornisce un meccanismo di
@@ -11,7 +11,7 @@ import java.util.Iterator;
  * ad accedere ai dati, mentre altri non possono accedervi senza autorizzazione.
  *
  *  Abstartc state:
- *  Un tipico SecureDataContainer<E> è costituito dai seguenti elementi:
+ *  Un tipico ISecureDataContainer<E> è costituito dai seguenti elementi:
  *      U = [u0,u1,...,un-1] è una lista di n utenti disposti secondo un ordine arbitrario dove:
  *          ui = {id,password} && Not Exist (i,j) con 0 <= i < n && con 0 <= j < n . ui.id = uj.id
  *
@@ -24,7 +24,7 @@ import java.util.Iterator;
  *                     Gli elementi di D' sono gli elementi ai quali u ha accesso.
  *                     For all u di U. Owner(u) => Access(u)
  */
-public interface SecureDataContainer<E extends Cloneable>{
+public interface ISecureDataContainer<E extends Cloneable>{
 
     /**
      * Crea l’identità di un nuovo utente della collezione
