@@ -12,19 +12,19 @@ import java.util.Iterator;
  *
  *  Abstartc state:
  *  Un tipico ISecureDataContainer<E> è costituito dai seguenti elementi:
- *      U = [u0,u1,...,un-1] è una lista di n utenti disposti secondo un ordine arbitrario dove:
+ *      U = {u0,u1,...,un-1} è un insieme di n utenti dove:
  *          ui = {id,password} && Not Exist (i,j) con 0 <= i < n && con 0 <= j < n . ui.id = uj.id
  *
- *      D = [d0,d1,...,dm-1] è una lista di m elementi distinti di tipo E, disposti secondo un ordine arbitrario
+ *      D = {d0,d1,...,dm-1} è un insieme di m elementi di tipo E
  *
  *      Owner: U -> D è una relazione che associa a ciascun elemento u di U una collezione D' di elemnti di D, eventaulmente vuota.
  *                    Gli elementi di D' sono gli elementi dei quali u è proprietario.
  *
- *      Access: U -> D è una relazione che associa a ciascun elemento u di U una collezione D' di elemnti di D, eventaulmente vuota.
- *                     Gli elementi di D' sono gli elementi ai quali u ha accesso.
- *                     For all u di U. Owner(u) => Access(u)
+ *      Access: D -> U è una relazione che associa a ciascun elemento d di D una collezione U' di elemnti di U, eventaulmente vuota.
+ *                     Gli elementi di U' sono gli utenti che hanno accesso a d.
+ *                     For all u di U. Owner(u) = D' => (For all d di D'. Access(d) contiene u )
  */
-public interface ISecureDataContainer<E extends Cloneable>{
+public interface ISecureDataContainer<E>{
 
     /**
      * Crea l’identità di un nuovo utente della collezione
@@ -69,9 +69,9 @@ public interface ISecureDataContainer<E extends Cloneable>{
     /**
      * Ottiene una copia del valore del dato nella collezione
      * se vengono rispettati i controlli di identità
-     * @requires Id != null && passw != null && data != null && (Exist u appartenente a U tale che u.id = Id && u.password = passw && Access(u) contiene data)
+     * @requires Id != null && passw != null && data != null && (Exist u appartenente a U tale che u.id = Id && u.password = passw && u in Access(data))
      * @throws IllegalArgumentException se Id = null || passw = null || data = null ||
-     *         Not (Exist u appartenente a U tale che u.id = Id && u.password = passw && Access(u) contiene data)
+     *         Not (Exist u appartenente a U tale che u.id = Id && u.password = passw && u in Access(data))
      * @return restituisce una deep copy di data
      */
     E get(String Id, String passw, E data) throws IllegalArgumentException;
