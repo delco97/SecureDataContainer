@@ -1,3 +1,5 @@
+import java.util.Objects;
+
 /**
  * Overview:
  * User è un tipo di dato contiene le informazioni realtive ad un utente.
@@ -48,19 +50,32 @@ public class User {
         return id;
     }
 
-    @Override
-    public int hashCode() {
-        return id.hashCode();
+    public String getHash_pwd() {
+        return hash_pwd;
+    }
+
+    public String getSalt() {
+        return salt;
     }
 
     @Override
-    public boolean equals(Object obj) {
-        try {
-            User u = (User) obj;
-            return u.id.equals(id);
-        }catch (Exception e){
-            return false;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (o instanceof User) {
+            User user = (User) o;
+            return id.equals(user.getId()) && hash_pwd.equals(user.getHash_pwd());
         }
+        if (o instanceof String) {
+            String userId = (String) o;
+            return id.equals(userId);
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 
     @Override

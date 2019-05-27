@@ -15,40 +15,45 @@ import java.util.Iterator;
  *      U = {u0,u1,...,un-1} è un insieme di n utenti dove:
  *          ui = {id,password} && Not Exist (i,j) con 0 <= i < n && con 0 <= j < n . ui.id = uj.id
  *
- *      D = {d0,d1,...,dm-1} è un insieme di m elementi di tipo E
+ *      D = [d0,d1,...,dm-1 è una collezione di m elementi di tipo E
  *
- *      Owner: U -> D è una relazione che associa a ciascun elemento u di U una collezione D' di elemnti di D, eventaulmente vuota.
- *                    Gli elementi di D' sono gli elementi dei quali u è proprietario.
+ *      Owner = {(d,u) | d appartiene a D && u appartiene a U && Owner(d) = u}
+ *      E' una relazione che associa a ciascun elemento d di D un elemento di U.
+ *      Owner(d) = u => Il proprietario di d è u
  *
- *      Access: D -> U è una relazione che associa a ciascun elemento d di D una collezione U' di elemnti di U, eventaulmente vuota.
- *                     Gli elementi di U' sono gli utenti che hanno accesso a d.
- *                     For all u di U. Owner(u) = D' => (For all d di D'. Access(d) contiene u )
+ *      Access = {(d,U') | d appartiene a D && U' è un sottoinsieme di U && Access(d) = u}
+ *      E' una relazione che associa a ciascun elemento d di D un elemento di U.
+ *      Owner(d) = U' => Utenti in U' hanno accesso a d
+ *
  */
 public interface ISecureDataContainer<E>{
 
     /**
      * Crea l’identità di un nuovo utente della collezione
      * @requires Id != null && passw != null && Not (Exist u appartenente a U tale che u.id = Id)
-     * @throws IllegalArgumentException se Id = null || passw = null || (Exist u appartenente a U tale che u.id = Id)
+     * @throws NullPointerException se Id = null || passw = null
+     * @throws UserException se (Exist u appartenente a U tale che u.id = Id)
      * @modifies this
      * @effects u = {Id,passw} && this_post.U = this_pre.U + u
-    */
-    void createUser(String Id, String passw) throws IllegalArgumentException;
+     */
+    void createUser(String Id, String passw) throws NullPointerException, UserException;
 
     /**
      * Rimuove l’utente dalla collezione
      * @requires Id != null && passw != null && (Exist u appartenente a U tale che u.id = Id && u.password = passw)
-     * @throws IllegalArgumentException se Id = null || passw = null || Not (Exist u appartenente a U tale che u.id = Id && u.password = passw)
+     * @throws IllegalArgumentException se Id = null || passw = null
+     * @throws UserException Not (Exist u appartenente a U tale che u.id = Id && u.password = passw)
      * @modifies this
      * @effects u = {Id,passw} && this_post.U = this_pre.U - u && this_post.D = this_pre.D - this_pre.Owner(u)
      */
-    void removeUser(String Id, String passw) throws IllegalArgumentException;
+    void removeUser(String Id, String passw) throws NullPointerException, UserException;
 
     /**
      * Restituisce il numero degli elementi di un utente presenti nella
      * collezione
      * @requires Owner != null && passw != null && (Exist u appartenente a U tale che u.id = Owner && u.password = passw)
-     * @throws IllegalArgumentException se Owner = null || passw = null || Not (Exist u appartenente a U tale che u.id = Owner && u.password = passw)
+     * @throws NullPointerException se Owner = null || passw = null
+     * @throws UserException Not (Exist u appartenente a U tale che u.id = Owner && u.password = passw)
      * @return restituisce 0 <= |Owner(u)|<= |D|
      */
     int getSize(String Owner, String passw) throws IllegalArgumentException;
@@ -57,7 +62,7 @@ public interface ISecureDataContainer<E>{
      * Inserisce il valore del dato nella collezione
      * se vengono rispettati i controlli di identità
      * @requires Owner != null && passw != null && data != null &&
-     *           (Exist u appartenente a U tale che u.id = Owner && u.password = passw) && data Not in D
+     *           (Exist u appartenente a U tale che u.id = Owner && u.password = passw && data Not in Owner(u))
      * @throws IllegalArgumentException se Owner = null || passw = null || data = null ||
      *         Not (Exist u appartenente a U tale che u.id = Owner && u.password = passw ) || data in D
      * @effects Se this_pre.Owner(u) non contiene allora this_post.Owner(u) contiene data; altrimenti this_post.Owner(u) = this_pre.Owner(u)
@@ -69,10 +74,10 @@ public interface ISecureDataContainer<E>{
     /**
      * Ottiene una copia del valore del dato nella collezione
      * se vengono rispettati i controlli di identità
-     * @requires Id != null && passw != null && data != null && (Exist u appartenente a U tale che u.id = Id && u.password = passw && u in Access(data))
+     * @requires Id != null && passw != null && data != null && (Exist u appartenente a U tale che u.id = Id && u.password = passw && Access(u) contiene data)
      * @throws IllegalArgumentException se Id = null || passw = null || data = null ||
-     *         Not (Exist u appartenente a U tale che u.id = Id && u.password = passw && u in Access(data))
-     * @return restituisce una deep copy di data
+     *         Not (Exist u appartenente a U tale che u.id = Id && u.password = passw && Access(u) contiene data)
+     * @return restituisce una copia data se data è presente all'interno di this; null altrimenti
      */
     E get(String Id, String passw, E data) throws IllegalArgumentException;
 
@@ -137,5 +142,12 @@ public interface ISecureDataContainer<E>{
      * @return  Se (Exist u appartenente a U tale che u.id = Id) restituisce true, altrimenti false
      */
     boolean userAuth(String id,String passw) throws IllegalArgumentException;
+    /**
+     * Verifica se l'utente id ha accesso al dato data
+     * @requires Id != null && passw != null
+     * @throws IllegalArgumentException se Id = null || passw = null
+     * @return  Se (Exist u appartenente a U tale che u.id = Id) restituisce true, altrimenti false
+     */
+    boolean hasAccess(String id, String passw, E data);
 
 }
