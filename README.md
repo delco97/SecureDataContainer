@@ -1,3 +1,4 @@
+# Secure DataC ontainer
 SecureDataContainer <E> is a container of type E objects. Intuitively the collection behaves like
 a Data Storage species for data storage and sharing (represented in the simulation by
 type E objects). The collection must guarantee a data security mechanism by providing its own
